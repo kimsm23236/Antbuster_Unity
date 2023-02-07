@@ -23,13 +23,11 @@ public static partial class GFunc
             else
             {
                 searchResult = FindChildObj(searchTarget, objName_);
+                // ������
+                if(searchResult == null || searchResult == default) { /* Pass */ }
+                else { return searchResult; }
             }
         }       // loop
-
-        // ������
-        if(searchResult == null || searchResult == default) { /* Pass */ }
-        else { return searchResult; }
-
         return searchResult;
     }       // FindChildObj()
 
@@ -109,6 +107,16 @@ public static partial class GFunc
     public static T GetComponentMust<T>(this GameObject obj)
     {
         T component_ = obj.GetComponent<T>();
+
+        GFunc.Assert(component_.IsValid<T>() != false, 
+            string.Format("{0}���� {1}��(��) ã�� �� �����ϴ�.",
+            obj.name, component_.GetType().Name));
+
+        return component_;
+    }       // GetComponentMust()
+    public static T GetComponentMust<T>(this GameObject obj, string objName)
+    {
+        T component_ = obj.FindChildObj(objName).GetComponent<T>();
 
         GFunc.Assert(component_.IsValid<T>() != false, 
             string.Format("{0}���� {1}��(��) ã�� �� �����ϴ�.",
