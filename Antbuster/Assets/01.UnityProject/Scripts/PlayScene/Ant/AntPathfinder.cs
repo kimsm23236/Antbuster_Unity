@@ -15,20 +15,26 @@ public class Path
         this.curPos = position;
         this.parent = parent;
     }
+    public Path(Pos position)
+    {
+        this.curPos = position;
+        this.parent = default;
 
-    public static bool operator ==(Path p1, Path p2)
-    {
-        return (p1.curPos.x == p2.curPos.x) && (p1.curPos.y == p2.curPos.y);
     }
-    public static bool operator !=(Path p1, Path p2)
-    {
-        return (p1.curPos.x != p2.curPos.x) && (p1.curPos.y != p2.curPos.y);
-    }
-    public override bool Equals(object obj)
-    {
-        Path p1 = obj as Path;
-        return (curPos.x == p1.curPos.x) && (curPos.y == p1.curPos.y);
-    }
+
+    // public static bool operator ==(Path p1, Path p2)
+    // {
+    //     return (p1.curPos.x == p2.curPos.x) && (p1.curPos.y == p2.curPos.y);
+    // }
+    // public static bool operator !=(Path p1, Path p2)
+    // {
+    //     return (p1.curPos.x != p2.curPos.x) || (p1.curPos.y != p2.curPos.y);
+    // }
+    // public override bool Equals(object obj)
+    // {
+    //     Path p1 = obj as Path;
+    //     return (curPos.x == p1.curPos.x) && (curPos.y == p1.curPos.y);
+    // }
 }
 public class Pos
 {
@@ -110,6 +116,8 @@ public class AntPathfinder : MonoBehaviour
 
     void PathFind()
     {
+        currentPath = board.GetPath(currentPos, destPos);
+        /*
         Path startPath = new Path(currentPos, default);
         Path EndPath = new Path(destPos, default);
 
@@ -118,16 +126,24 @@ public class AntPathfinder : MonoBehaviour
 
         openList.Enqueue(startPath, 0);
 
+        int loopcount = 0;
+
         while(openList.Count > 0)
         {
+            if(loopcount++ >= 10000)
+            {
+                throw new System.Exception("Infinite Loop");
+            }
             Path curPath = openList.Dequeue();
+            GFunc.LogWarning($"curPath x : {curPath.curPos.x}, y : {curPath.curPos.y}");
             closeList.Add(curPath);
 
-            if(curPath == EndPath)
+            if(curPath.curPos.x == EndPath.curPos.x && curPath.curPos.y == EndPath.curPos.y)
             {
-                List<Path> paths = default;
+
+                List<Path> paths = new List<Path>();
                 Path current = curPath;
-                while(current.parent != default)
+                while(current != default)
                 {
                     paths.Add(current);
                     current = current.parent;
@@ -157,7 +173,7 @@ public class AntPathfinder : MonoBehaviour
                 for(int i = 0 ; i < openList.Count; i++)
                 {
                     Path openNode = openList[i] as Path;
-                    if(child == openNode && child.G > openNode.G)
+                    if((child.curPos.x == openNode.curPos.x) && (child.curPos.y == openNode.curPos.y) && child.G > openNode.G)
                         isNotUpdate = true;
                 }
                 if(isNotUpdate)
@@ -166,5 +182,6 @@ public class AntPathfinder : MonoBehaviour
                 openList.Enqueue(child, -child.F);
             }
         }
+        */
     }
 }
