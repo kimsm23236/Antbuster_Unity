@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Path
 {
-    public Pos curPos;
+    public Pos position;
     public Path parent;
 
     public int F = 0;
@@ -12,12 +12,12 @@ public class Path
     public int H = 0;
     public Path(Pos position, Path parent)
     {
-        this.curPos = position;
+        this.position = position;
         this.parent = parent;
     }
     public Path(Pos position)
     {
-        this.curPos = position;
+        this.position = position;
         this.parent = default;
 
     }
@@ -73,11 +73,15 @@ public class AntPathfinder : MonoBehaviour
     // debuging
     public Pos currentPos = default;
     public Pos nextPos = default;
-    private Pos reserveNextPos = default;
     private Pos destPos = default;
     private Board board = default;
+    private GameObject target = default;
+    public float speed = default;
+    public float rotateSpeed = default;
 
     private List<Path> currentPath = default;
+    private int pathIdx = default;
+    private GameObject[,] moveTargetArr = default;
     
     private AntState state = default;
 
@@ -89,27 +93,42 @@ public class AntPathfinder : MonoBehaviour
         destPos = new Pos(debugDestX, debugDestY);
         GameObject gObjs = GFunc.GetRootObj("GameObjs");
         board = gObjs.GetComponentMust<Board>("Board");
+        moveTargetArr = new GameObject[board.height, board.width];
+        for(int i = 0; i < board.height; i++)
+        {
+            for(int j = 0; j < board.width; j++)
+            {
+                moveTargetArr[i,j] = board.Tiles[j, i].gameObject.FindChildObj("MoveTarget");
+            }
+        }
+        // speed = 1f;
+        // rotateSpeed = 1f;
+        pathIdx = 0;
+        PathFind();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.A))
-        {
-            PathFind();
-        }
+        Move();
+        RotateToTarget();
     }
-
-    void SetReserveNextPos()
+    void Move()
     {
-
+        if(target == null || target == default)
+            return;
+        RectTransform rect = gameObject.GetRect();
+        // transform.LookAt(target.transform);
+        rect.position = Vector2.MoveTowards(transform.position, target.transform.position, Time.deltaTime * speed);
+        //transform.LookAt(target.transform);
+        //transform.position = Vector3.MoveTowards(transform.position, target.transform.position, Time.deltaTime * speed);
+        ChangeTarget();
     }
     void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider.tag == "Tile")
         {
             currentPos = nextPos;
-            nextPos = reserveNextPos;
             // 다음 경로 설정해서 reserveNextPos에 넣어주는 함수 만들어서 넣기
         }
     }
@@ -117,71 +136,28 @@ public class AntPathfinder : MonoBehaviour
     void PathFind()
     {
         currentPath = board.GetPath(currentPos, destPos);
-        /*
-        Path startPath = new Path(currentPos, default);
-        Path EndPath = new Path(destPos, default);
-
-        PriorityQueue<Path> openList = new PriorityQueue<Path>();
-        List<Path> closeList = new List<Path>();
-
-        openList.Enqueue(startPath, 0);
-
-        int loopcount = 0;
-
-        while(openList.Count > 0)
+        // 경로 지정 후 타겟 설정
+        target = moveTargetArr[currentPath[pathIdx].position.y, currentPath[pathIdx].position.x];        
+    }
+    void ChangeTarget()
+    {
+        float dist = Mathf.Abs(target.transform.position.x - transform.position.x) +
+                        Mathf.Abs(target.transform.position.y - transform.position.y);
+        if(dist < 0.04f)
         {
-            if(loopcount++ >= 10000)
-            {
-                throw new System.Exception("Infinite Loop");
-            }
-            Path curPath = openList.Dequeue();
-            GFunc.LogWarning($"curPath x : {curPath.curPos.x}, y : {curPath.curPos.y}");
-            closeList.Add(curPath);
-
-            if(curPath.curPos.x == EndPath.curPos.x && curPath.curPos.y == EndPath.curPos.y)
-            {
-
-                List<Path> paths = new List<Path>();
-                Path current = curPath;
-                while(current != default)
-                {
-                    paths.Add(current);
-                    current = current.parent;
-                }
-                paths.Reverse();
-                currentPath = paths;
-                // 디버깅용
-                for(int i = 0 ; i < currentPath.Count; i++)
-                {
-                    GFunc.LogWarning($"Path : ({currentPath[i].curPos.x}, {currentPath[i].curPos.y})");
-                }
-
-                //
-                break;
-            }
-
-            List<Path> childList = board.GetOpenList(curPath, closeList);
-            foreach(Path child in childList)
-            {
-                child.parent = curPath;
-                child.G = curPath.G + 1;
-                child.H = (int)Mathf.Pow((float)(child.curPos.x - EndPath.curPos.x), 2f);
-                child.F = child.G + child.H;
-                // 자식이 오픈리스트에 존재할경우
-                // g값 비교하여 갱신
-                bool isNotUpdate = false;
-                for(int i = 0 ; i < openList.Count; i++)
-                {
-                    Path openNode = openList[i] as Path;
-                    if((child.curPos.x == openNode.curPos.x) && (child.curPos.y == openNode.curPos.y) && child.G > openNode.G)
-                        isNotUpdate = true;
-                }
-                if(isNotUpdate)
-                    continue;
-                
-                openList.Enqueue(child, -child.F);
-            }
+            pathIdx = Mathf.Clamp(pathIdx + 1, 0, currentPath.Count - 1);
+            target = moveTargetArr[currentPath[pathIdx].position.y, currentPath[pathIdx].position.x];
         }
-        */
+    }
+    void RotateToTarget()
+    {
+        if(target == null || target == default)
+            return;
+        Vector2 direction = new Vector2(transform.position.x - target.transform.position.x, transform.position.y - target.transform.position.y);
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        Quaternion angleAxis = Quaternion.AngleAxis(angle - 90f, Vector3.forward);
+        Quaternion rotation = Quaternion.Slerp(transform.rotation, angleAxis, rotateSpeed * Time.deltaTime);
+        transform.rotation = rotation;
     }
 }

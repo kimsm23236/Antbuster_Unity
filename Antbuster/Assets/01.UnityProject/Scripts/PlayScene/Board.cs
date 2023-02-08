@@ -9,6 +9,13 @@ public class Board : MonoBehaviour
     private GameObject tilePrefab = default;
 
     private Tile[,] tiles;
+    public Tile[,] Tiles
+    {
+        get
+        {
+            return tiles;
+        }
+    }
 
     // 우선 네방향
     private int[] dy = new int[] { -1, 0, 1, 0,  -1, 1, 1, -1 };
@@ -84,12 +91,12 @@ public class Board : MonoBehaviour
             Path curPath = pq.Dequeue();
             // GFunc.LogWarning($"curPath x : {curPath.curPos.x}, y : {curPath.curPos.y}");
 
-            if(closed[curPath.curPos.y, curPath.curPos.x])
+            if(closed[curPath.position.y, curPath.position.x])
                 continue;
 
-            closed[curPath.curPos.y, curPath.curPos.x] = true;
+            closed[curPath.position.y, curPath.position.x] = true;
 
-            if(curPath.curPos.x == EndPath.curPos.x && curPath.curPos.y == EndPath.curPos.y)
+            if(curPath.position.x == EndPath.position.x && curPath.position.y == EndPath.position.y)
             {
                 break;
             }
@@ -97,8 +104,8 @@ public class Board : MonoBehaviour
 
             for(int i = 0; i < 8; i++)
             {
-                int nextX = curPath.curPos.x + dx[i];
-                int nextY = curPath.curPos.y + dy[i];
+                int nextX = curPath.position.x + dx[i];
+                int nextY = curPath.position.y + dy[i];
 
                 // 범위 밖 검사
                 if(nextX < 0 || nextX >= width || nextY < 0 || nextY >= height)
@@ -123,22 +130,18 @@ public class Board : MonoBehaviour
                 nextPath.G = g;
                 nextPath.F = g + h;
                 pq.Enqueue(nextPath, -(g+h));
-                parent[nextY, nextX] = new Pos(curPath.curPos.x, curPath.curPos.y);
+                parent[nextY, nextX] = new Pos(curPath.position.x, curPath.position.y);
             }
         }
 
         Path calPath = new Path(new Pos(destPos.x, destPos.y));
-        Pos prPos = new Pos(parent[calPath.curPos.y, calPath.curPos.x].x, parent[calPath.curPos.y, calPath.curPos.x].y);
-        while(startPos.x != calPath.curPos.x || startPos.y != calPath.curPos.y)
+        Pos prPos = new Pos(parent[calPath.position.y, calPath.position.x].x, parent[calPath.position.y, calPath.position.x].y);
+        while(startPos.x != calPath.position.x || startPos.y != calPath.position.y)
         {
-            resultPath.Add(new Path(new Pos(calPath.curPos.x, calPath.curPos.y)));
-            calPath.curPos = parent[calPath.curPos.y, calPath.curPos.x];
+            resultPath.Add(new Path(new Pos(calPath.position.x, calPath.position.y)));
+            calPath.position = parent[calPath.position.y, calPath.position.x];
         }
         resultPath.Reverse();
-        foreach(Path p in resultPath)
-        {
-            GFunc.LogWarning($"Setting Path : x : {p.curPos.x}, y : {p.curPos.y}");
-        }
         return resultPath;
     }
     // Legacy
@@ -146,8 +149,8 @@ public class Board : MonoBehaviour
     {
         List<Path> childLists = new List<Path>();
 
-        int x = curPath.curPos.x;
-        int y = curPath.curPos.y;
+        int x = curPath.position.x;
+        int y = curPath.position.y;
 
         for(int i = 0; i < 8; i++)
         {

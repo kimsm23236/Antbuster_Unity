@@ -26,18 +26,55 @@ SpriteAtlas:
       padding: 4
       blockOffset: 1
       allowAlphaSplitting: 0
-      enableRotation: 1
-      enableTightPacking: 1
+      enableRotation: 0
+      enableTightPacking: 0
       enableAlphaDilation: 0
     secondaryTextureSettings: {}
     variantMultiplier: 1
-    packables: []
+    packables:
+    - {fileID: 102900000, guid: 5448f6ffe5f255049bc59b8cb2b93ec1, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
-  m_PackedSprites: []
-  m_PackedSpriteNamesToIndex: []
+  m_PackedSprites:
+  - {fileID: 21300000, guid: f325ad3053bc27e419014a9d2baa506b, type: 2}
+  - {fileID: 21300000, guid: 47c2bf372b4dca943998933ac516434e, type: 2}
+  - {fileID: 21300000, guid: a36dc2975b47d124a83f84cf31814237, type: 2}
+  - {fileID: 21300000, guid: 4ea924eadab506b4689ab966ce1d1c3a, type: 2}
+  - {fileID: 21300000, guid: 15491ac46e2960b4ab4f431dbeb7d12e, type: 2}
+  - {fileID: 21300000, guid: 9d4a252534b906b43acda36b8b7796a1, type: 2}
+  - {fileID: 21300000, guid: 9fb093c94cefd2241934493806422475, type: 2}
+  - {fileID: 21300000, guid: 62cbb2bd143f1684292eec314e8da5ef, type: 2}
+  - {fileID: 21300000, guid: e8b9641dcb6556148a9e6b79cec9c010, type: 2}
+  - {fileID: 21300000, guid: a6abf22f59b6ed14f96618305355d87f, type: 2}
+  - {fileID: 21300000, guid: d319370c7cfff0b41ab4b76fb0ce5543, type: 2}
+  - {fileID: 21300000, guid: 6171078b926220f4497661e805cd4125, type: 2}
+  - {fileID: 21300000, guid: c53c6314a4b550a41aaa780714236457, type: 2}
+  - {fileID: 21300000, guid: e1f22cdcb389857439547479709b17c7, type: 2}
+  - {fileID: 21300000, guid: dc35944d0ee7908438bc12f8feb9c006, type: 2}
+  - {fileID: 21300000, guid: ad852fce021789742b199da75bdd6d10, type: 2}
+  - {fileID: 21300000, guid: b93b2b74421aa6e4abb7493210914db0, type: 2}
+  - {fileID: 21300000, guid: 629c44e8ac645994a8ae40ebf36def8e, type: 2}
+  m_PackedSpriteNamesToIndex:
+  - Tower_Create_Button
+  - Ant_Death_Parts_5
+  - Tower_Create_Button_Press
+  - Ant_Death_Parts_7
+  - Ant_Death_Parts_3
+  - Ant_walk_1
+  - BgSprite
+  - Ant_Hp_Bar
+  - Turret_Barrel_base
+  - Ant_Death_Parts_6
+  - Ant_Death_Parts_4
+  - Ant_Death_Parts_1
+  - Ant_Hp_Bar_Gauge
+  - Turret_Atk_Range
+  - Ant_Death_Parts_2
+  - Ant_walk_2
+  - Turret_Platform_base
+  - Turret_Barrel_base_2
   m_RenderDataMap: {}
   m_Tag: ImageAll
   m_IsVariant: 0

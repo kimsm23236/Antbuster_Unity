@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Ant
+  - Bullet
   layers:
   - Default
   - TransparentFX
@@ -40,4 +42,13 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Bg
+    uniqueID: 3702178935
+    locked: 0
+  - name: GameObjs
+    uniqueID: 3689842467
+    locked: 0
+  - name: Ui
+    uniqueID: 723584479
     locked: 0
