@@ -5,6 +5,9 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private PlayerState currentPlayerState = default;
+
+    private GameObject BaseTurretPrefab = default;
+    private GameObject BaseTurrentPSPrefab = default;
     public enum PlayerState
     {
         NONE = -1,
