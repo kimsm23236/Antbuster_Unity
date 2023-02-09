@@ -59,6 +59,10 @@ public class TurretShoot : MonoBehaviour
 
         RotateToTarget();
         GameObject newBullet = GetBulletfromPool();
+
+        if(newBullet == null || newBullet == default)
+            return;
+            
         Transform spawnTransform = SpawnPos.transform;
         newBullet.transform.position = spawnTransform.position;
         newBullet.transform.rotation = spawnTransform.rotation;

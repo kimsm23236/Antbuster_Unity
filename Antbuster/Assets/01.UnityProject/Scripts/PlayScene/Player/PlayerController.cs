@@ -2,12 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.EventSystems;
+
 public class PlayerController : MonoBehaviour
 {
     private PlayerState currentPlayerState = default;
+    private PlayerState PrevState = default;
+
+    
 
     private GameObject BaseTurretPrefab = default;
     private GameObject BaseTurrentPSPrefab = default;
+    public delegate void ChangeStateEventHandler(PlayerState value);
+    public ChangeStateEventHandler SetPlayerState = default;
+    public delegate void EventHandler();
+    public EventHandler onCreateTurretState = default;
+    public EventHandler onIdleState = default;
+
+    // raycast
+    public Camera camera = default;
+    public RaycastHit2D[] hits;
+    private Vector3 MousePos = default;
+    //
     public enum PlayerState
     {
         NONE = -1,
@@ -21,11 +37,59 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         currentPlayerState = PlayerState.NONE;
+        SetPlayerState = new ChangeStateEventHandler(ChangeState);
+        SetPlayerState(PlayerState.Idle);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+    public void OnClickCreateTurretBtn()
+    {
+        SetPlayerState(PlayerState.TurretCreate);
+    }
+    private void ChangeState(PlayerState newState)
+    {
+        PrevState = currentPlayerState;
+        currentPlayerState = newState;
+        switch(currentPlayerState)
+        {
+            case PlayerState.Idle:
+            onIdleState();
+            break;
+            case PlayerState.TurretCreate:
+            onCreateTurretState();
+            break;
+            default:
+            break;
+        }
+    }
+    void rethrowRaycast(PointerEventData eventData, GameObject excludeGameObject)
+    {
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+
+        pointerEventData.position = eventData.position;
+        // pointerEventData.position = eventData.pressPosition;
+        List<RaycastResult> raycastResult = new List<RaycastResult>();
+
+        EventSystem.current.RaycastAll(pointerEventData, raycastResult);
+
+        for(int i = 0; i < raycastResult.Count; i++)
+        {
+            if(excludeGameObject != null && raycastResult[i].gameObject != excludeGameObject)
+            {
+                //sim
+            }
+        }
+
+    }
+    void simulateCallbackFunction(GameObject target)
+    {
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+
+        RaycastResult res = new RaycastResult();
+        //res.gameObject
     }
 }

@@ -96,6 +96,10 @@ public static partial class GFunc
     {
         obj_.GetRect().anchoredPosition += position2D;
     }
+    public static void SetAnchoredPos(this GameObject obj_, Vector2 position2D)
+    {
+        obj_.GetRect().anchoredPosition = position2D;
+    }
 
     //! Ʈ�������� ����ؼ� ������Ʈ�� �����̴� �Լ�
     public static void Translate(this Transform transform_, Vector2 moveVector)

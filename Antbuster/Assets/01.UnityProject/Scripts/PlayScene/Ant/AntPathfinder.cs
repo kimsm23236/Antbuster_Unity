@@ -98,7 +98,7 @@ public class AntPathfinder : MonoBehaviour
         {
             for(int j = 0; j < board.width; j++)
             {
-                moveTargetArr[i,j] = board.Tiles[j, i].gameObject.FindChildObj("MoveTarget");
+                moveTargetArr[i,j] = board.Tiles[i, j].gameObject.FindChildObj("MoveTarget");
             }
         }
         // speed = 1f;
@@ -126,18 +126,16 @@ public class AntPathfinder : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if(collider.tag == "Tile")
-        {
-            currentPos = nextPos;
-            // 다음 경로 설정해서 reserveNextPos에 넣어주는 함수 만들어서 넣기
-        }
+        
     }
 
     void PathFind()
     {
         currentPath = board.GetPath(currentPos, destPos);
         // 경로 지정 후 타겟 설정
-        target = moveTargetArr[currentPath[pathIdx].position.y, currentPath[pathIdx].position.x];        
+        pathIdx = 0;
+        target = moveTargetArr[currentPath[pathIdx].position.y, currentPath[pathIdx].position.x];
+        SetPos(); 
     }
     void ChangeTarget()
     {
@@ -145,9 +143,21 @@ public class AntPathfinder : MonoBehaviour
                         Mathf.Abs(target.transform.position.y - transform.position.y);
         if(dist < 0.04f)
         {
+            board.onOutAntHandler(currentPath[pathIdx].position.x, currentPath[pathIdx].position.y);
             pathIdx = Mathf.Clamp(pathIdx + 1, 0, currentPath.Count - 1);
             target = moveTargetArr[currentPath[pathIdx].position.y, currentPath[pathIdx].position.x];
+            board.onArriveAntHandler(currentPath[pathIdx].position.x, currentPath[pathIdx].position.y);
+
+            // SetPos();
         }
+    }
+    void SetPos()
+    {
+        int nextIdx = Mathf.Clamp(pathIdx + 1, 0, currentPath.Count - 1);
+        currentPos.x = currentPath[pathIdx].position.x;
+        currentPos.y = currentPath[pathIdx].position.y;
+        nextPos.x = currentPath[nextIdx].position.x;
+        nextPos.y = currentPath[nextIdx].position.y;
     }
     void RotateToTarget()
     {

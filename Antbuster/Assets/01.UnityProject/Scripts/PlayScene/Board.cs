@@ -18,17 +18,29 @@ public class Board : MonoBehaviour
     }
 
     // 우선 네방향
-    private int[] dy = new int[] { -1, 0, 1, 0,  -1, 1, 1, -1 };
-    private int[] dx = new int[] { 0, -1, 0, 1, -1, -1, 1, 1 };
+    private int[] dy = new int[] { -1, 0, 1, 0,  -1, 1, 1, -1, 0};
+    private int[] dx = new int[] { 0, -1, 0, 1, -1, -1, 1, 1, 0};
     private int[] cost = new int[] { 10, 10, 10, 10, 14, 14, 14, 14};
 
+    // delegate
+    public delegate void EventHandler_TwoParams(int x, int y);
+    public EventHandler_TwoParams onArriveAntHandler = default;
+    public EventHandler_TwoParams onOutAntHandler = default; 
 
+    //
+
+    void Awake()
+    {
+        tilePrefab = gameObject.FindChildObj("Tile");
+        tiles = new Tile[height, width];    
+        Initialize();
+        onArriveAntHandler = new EventHandler_TwoParams(AntArrive);
+        onOutAntHandler = new EventHandler_TwoParams(AntOut);
+    }
     // Start is called before the first frame update
     void Start()
     {
-        tilePrefab = gameObject.FindChildObj("Tile");
-        tiles = new Tile[width, height];        
-        Initialize();
+        
     }
 
     // Update is called once per frame
@@ -39,14 +51,14 @@ public class Board : MonoBehaviour
 
     private void Initialize()
     {
-        for(int i = 0 ; i < width; i++)
+        for(int i = 0 ; i < height; i++)
         {
-            for(int j = 0; j < height; j++)
+            for(int j = 0; j < width; j++)
             {
                 var tileObject = Instantiate(tilePrefab, transform);
                 var tile = tileObject.GetComponentMust<Tile>();
                 tile.Initialize(i, j);
-                tile.transform.localPosition = new Vector2(i * tile.GetComponent<RectTransform>().sizeDelta.x, j * tile.GetComponent<RectTransform>().sizeDelta.y * -1);
+                tile.transform.localPosition = new Vector2(j * tile.GetComponent<RectTransform>().sizeDelta.x, i * tile.GetComponent<RectTransform>().sizeDelta.y * -1);
                 tiles[i, j] = tile;
             }
             
@@ -114,7 +126,7 @@ public class Board : MonoBehaviour
                 if(closed[nextY, nextX])
                     continue;
                 // 타일이 잠겨있는지 검사 후 열려있다면, * 아무것도 없다면 오픈 리스트에 추가
-                if(!tiles[nextX, nextY].isOpen)
+                if(!tiles[nextY, nextX].isOpen)
                 {
                     continue;
                 }
@@ -169,7 +181,7 @@ public class Board : MonoBehaviour
                 continue;
 
             // 타일이 닫혀있는지 검사 후 열려있다면, * 아무것도 없다면 오픈 리스트에 추가
-            if(!tiles[nextX, nextY].isOpen)
+            if(!tiles[nextY, nextX].isOpen)
             {
                 continue;
             }
@@ -177,5 +189,28 @@ public class Board : MonoBehaviour
             childLists.Add(nextPath);
         }
         return childLists;
+    }
+
+    private void AntArrive(int x, int y)
+    {
+        for(int i = 0 ; i < 9; i++)
+        {
+            int checkX = x + dx[i];
+            int checkY = y + dy[i];
+            if(checkX < 0 || checkX >= width || checkY < 0 || checkY >= height)
+                continue;
+            tiles[checkY,checkX].onReachAnt();
+        }
+    }
+    private void AntOut(int x, int y)
+    {
+        for(int i = 0 ; i < 9; i++)
+        {
+            int checkX = x + dx[i];
+            int checkY = y + dy[i];
+            if(checkX < 0 || checkX >= width || checkY < 0 || checkY >= height)
+                continue;
+            tiles[checkY,checkX].onOutAnt();
+        }
     }
 }
